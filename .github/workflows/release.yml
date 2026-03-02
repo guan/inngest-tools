@@ -13,6 +13,8 @@ permissions:
 
 jobs:
   release:
+    # Only run if NPM_TOKEN is configured
+    if: github.repository == 'guan/inngest-tools'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,10 +34,22 @@ jobs:
       - run: pnpm test
 
       - name: Create Release Pull Request or Publish
+        if: env.NPM_TOKEN != ''
         id: changesets
         uses: changesets/action@v1
         with:
           publish: pnpm changeset publish
+          title: "chore: version packages"
+          commit: "chore: version packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Release Pull Request (no publish)
+        if: env.NPM_TOKEN == ''
+        uses: changesets/action@v1
+        with:
           title: "chore: version packages"
           commit: "chore: version packages"
         env:

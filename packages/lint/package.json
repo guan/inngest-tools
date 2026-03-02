@@ -1,6 +1,6 @@
 {
   "name": "@inngest-tools/lint",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Linter for Inngest step functions",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -12,7 +12,9 @@
       "require": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",

@@ -1,5 +1,13 @@
 # @inngest-tools/lint
 
+## 0.1.1
+
+### Patch Changes
+
+- Add README to each package for npm
+- Updated dependencies
+  - @inngest-tools/core@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes

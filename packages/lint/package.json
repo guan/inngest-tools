@@ -1,6 +1,6 @@
 {
   "name": "@inngest-tools/lint",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Linter for Inngest step functions",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

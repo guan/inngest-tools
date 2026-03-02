@@ -1,6 +1,6 @@
 {
   "name": "@inngest-tools/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Static analysis engine for Inngest step functions",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

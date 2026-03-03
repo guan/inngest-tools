@@ -1,0 +1,37 @@
+{
+  "name": "@inngest-tools/dev-server",
+  "version": "0.1.0",
+  "description": "Live dev dashboard for monitoring Inngest function analysis",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@inngest-tools/core": "workspace:*",
+    "@inngest-tools/viz": "workspace:*",
+    "@inngest-tools/lint": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "tsup": "^8.4.0",
+    "vitest": "^3.0.0"
+  },
+  "license": "MIT"
+}

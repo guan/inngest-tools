@@ -1,6 +1,6 @@
 # inngest-tools
 
-Inngest ステップ関数の静的解析ツール群。TypeScript ソースコードを解析し、関数間のイベント依存関係の可視化やアンチパターンの検出を行います。
+Inngest ステップ関数の静的解析ツール群。TypeScript ソースコードを解析し、関数間のイベント依存関係の可視化、アンチパターンの検出、リアルタイムモニタリングを行います。
 
 ## インストール
 
@@ -19,6 +19,9 @@ pnpm add @inngest-tools/core @inngest-tools/viz @inngest-tools/lint
 ## クイックスタート
 
 ```bash
+# ライブ開発ダッシュボードを起動 — 全体像を最速で確認
+inngest-tools dev ./src
+
 # イベント依存グラフを Mermaid 形式で出力
 inngest-tools viz ./src
 
@@ -27,6 +30,30 @@ inngest-tools lint ./src
 ```
 
 ## CLI コマンド
+
+### `inngest-tools dev <target-dir>`
+
+ソースファイルを監視し、リアルタイムで更新されるライブ開発ダッシュボードを起動します。関数の依存グラフ、関数一覧、lint 結果をブラウザで確認できます。
+
+```bash
+inngest-tools dev ./src
+inngest-tools dev ./src --port 3000 --no-open
+```
+
+| オプション | 説明 | デフォルト |
+|---|---|---|
+| `-p, --port <port>` | 待ち受けポート | `6600` |
+| `--host <host>` | バインドするホスト名 | `0.0.0.0` |
+| `--tsconfig <path>` | tsconfig.json のパス | 自動検出 |
+| `--ignore <patterns...>` | 無視するファイルパターン | - |
+| `--no-open` | ブラウザを自動で開かない | 開く |
+
+ダッシュボードの機能:
+
+- **依存グラフ** — D3.js によるインタラクティブなフォースグラフ（ズーム・ドラッグ・フィルタ対応）
+- **関数一覧** — 検出された全関数のトリガー、ステップ、設定を表示
+- **Lint 結果** — エラーと警告をファイル別にグループ表示、リアルタイム更新
+- **自動リロード** — ファイル変更を検知して自動で再解析（300ms デバウンス）
 
 ### `inngest-tools viz <target-dir>`
 
@@ -287,14 +314,38 @@ const myRule: LintRule = {
 const result = lint(analysis, [...builtinRules, myRule], builtinProjectRules)
 ```
 
+### @inngest-tools/dev-server
+
+開発ダッシュボードサーバーをプログラムから起動します。
+
+```typescript
+import { startDevServer } from '@inngest-tools/dev-server'
+
+const handle = await startDevServer({
+  targetDir: './src',
+  port: 6600,
+  host: 'localhost',
+  debounceMs: 300,
+})
+
+console.log(`Dashboard running at ${handle.url}`)
+
+// 手動で再解析をトリガー
+handle.triggerAnalysis()
+
+// シャットダウン
+await handle.close()
+```
+
 ## パッケージ構成
 
 ```
 packages/
-  core/     @inngest-tools/core   — TypeScript AST 解析 (ts-morph)
-  viz/      @inngest-tools/viz    — グラフ生成・レンダリング
-  lint/     @inngest-tools/lint   — lint エンジン・ルール・レポーター
-  cli/      inngest-tools         — CLI エントリポイント
+  core/        @inngest-tools/core        — TypeScript AST 解析 (ts-morph)
+  viz/         @inngest-tools/viz         — グラフ生成・レンダリング
+  lint/        @inngest-tools/lint        — lint エンジン・ルール・レポーター
+  dev-server/  @inngest-tools/dev-server  — ライブ開発ダッシュボードサーバー
+  cli/         inngest-tools              — CLI エントリポイント
 ```
 
 ## 開発

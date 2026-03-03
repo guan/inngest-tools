@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@inngest-tools/core": "workspace:*",
+    "@inngest-tools/dev-server": "workspace:*",
     "@inngest-tools/lint": "workspace:*",
     "@inngest-tools/viz": "workspace:*",
     "chalk": "^4.1.2",

@@ -1,6 +1,7 @@
 import { Command } from 'commander'
 import { registerVizCommand } from './commands/viz'
 import { registerLintCommand } from './commands/lint'
+import { registerDevCommand } from './commands/dev'
 
 const program = new Command()
   .name('inngest-tools')
@@ -9,5 +10,6 @@ const program = new Command()
 
 registerVizCommand(program)
 registerLintCommand(program)
+registerDevCommand(program)
 
 program.parse()

@@ -1,0 +1,12 @@
+{
+  "name": "inngest-tools-example",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "inngest": "^3.0.0",
+    "typescript": "^5.0.0"
+  }
+}

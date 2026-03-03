@@ -80,10 +80,20 @@ export function analyzeProject(
     })
   }
 
+  // Collect all variable names used for Inngest instances
+  const instanceVarNames = new Set(instances.map((i) => i.variableName))
+
   const functions: InngestFunction[] = []
 
-  for (const instance of instances) {
-    const fns = extractFunctions(instance, resolvedDir, diagnostics)
+  // Search ALL project files for createFunction calls, not just the file
+  // where the Inngest instance is defined (supports cross-file imports)
+  for (const sourceFile of project.getSourceFiles()) {
+    const fns = extractFunctionsFromFile(
+      sourceFile,
+      instanceVarNames,
+      resolvedDir,
+      diagnostics
+    )
     functions.push(...fns)
   }
 
@@ -181,38 +191,33 @@ export function findInngestInstances(project: Project): InngestInstance[] {
 // ============================================================
 
 /**
- * Inngest インスタンスの createFunction 呼び出しを全て検出し、
+ * ソースファイルから createFunction 呼び出しを全て検出し、
  * InngestFunction を構築する
  */
-function extractFunctions(
-  instance: InngestInstance,
+function extractFunctionsFromFile(
+  sourceFile: SourceFile,
+  instanceVarNames: Set<string>,
   basePath: string,
   diagnostics: AnalysisDiagnostic[]
 ): InngestFunction[] {
   const functions: InngestFunction[] = []
-  const varName = instance.variableName
 
-  // Search the source file where the instance is defined
-  // (cross-file import resolution is deferred to a later phase)
-  const sourceFile = instance.sourceFile
-  {
-    sourceFile.forEachDescendant((node) => {
-      if (!Node.isCallExpression(node)) return
+  sourceFile.forEachDescendant((node) => {
+    if (!Node.isCallExpression(node)) return
 
-      const expr = node.getExpression()
-      if (!Node.isPropertyAccessExpression(expr)) return
-      if (expr.getName() !== 'createFunction') return
+    const expr = node.getExpression()
+    if (!Node.isPropertyAccessExpression(expr)) return
+    if (expr.getName() !== 'createFunction') return
 
-      const obj = expr.getExpression()
-      if (!Node.isIdentifier(obj)) return
-      if (obj.getText() !== varName) return
+    const obj = expr.getExpression()
+    if (!Node.isIdentifier(obj)) return
+    if (!instanceVarNames.has(obj.getText())) return
 
-      const fn = parseCreateFunction(node, sourceFile, basePath, diagnostics)
-      if (fn) {
-        functions.push(fn)
-      }
-    })
-  }
+    const fn = parseCreateFunction(node, sourceFile, basePath, diagnostics)
+    if (fn) {
+      functions.push(fn)
+    }
+  })
 
   return functions
 }

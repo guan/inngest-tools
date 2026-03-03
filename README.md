@@ -1,6 +1,6 @@
 # inngest-tools
 
-Static analysis toolset for Inngest step functions. Analyzes TypeScript source code to visualize event dependencies between functions and detect anti-patterns.
+Static analysis toolset for Inngest step functions. Analyzes TypeScript source code to visualize event dependencies, detect anti-patterns, and monitor your Inngest functions in real time.
 
 ## Installation
 
@@ -19,6 +19,9 @@ pnpm add @inngest-tools/core @inngest-tools/viz @inngest-tools/lint
 ## Quick Start
 
 ```bash
+# Start the live dev dashboard — the fastest way to see everything
+inngest-tools dev ./src
+
 # Output event dependency graph in Mermaid format
 inngest-tools viz ./src
 
@@ -27,6 +30,30 @@ inngest-tools lint ./src
 ```
 
 ## CLI Commands
+
+### `inngest-tools dev <target-dir>`
+
+Start a live dev dashboard that watches your source files and updates in real time. Opens an interactive web UI showing the function dependency graph, function list, and lint results.
+
+```bash
+inngest-tools dev ./src
+inngest-tools dev ./src --port 3000 --no-open
+```
+
+| Option | Description | Default |
+|---|---|---|
+| `-p, --port <port>` | Port to listen on | `6600` |
+| `--host <host>` | Hostname to bind to | `0.0.0.0` |
+| `--tsconfig <path>` | Path to tsconfig.json | auto-detect |
+| `--ignore <patterns...>` | File patterns to ignore | - |
+| `--no-open` | Do not open browser automatically | open |
+
+The dashboard includes:
+
+- **Dependency graph** — Interactive D3.js force-directed graph with zoom, drag, and filtering
+- **Function list** — All detected functions with their triggers, steps, and configuration
+- **Lint results** — Errors and warnings grouped by file, updated live
+- **Auto-reload** — File changes are detected and re-analyzed automatically (300ms debounce)
 
 ### `inngest-tools viz <target-dir>`
 
@@ -287,14 +314,38 @@ const myRule: LintRule = {
 const result = lint(analysis, [...builtinRules, myRule], builtinProjectRules)
 ```
 
+### @inngest-tools/dev-server
+
+Starts a dev dashboard server programmatically.
+
+```typescript
+import { startDevServer } from '@inngest-tools/dev-server'
+
+const handle = await startDevServer({
+  targetDir: './src',
+  port: 6600,
+  host: 'localhost',
+  debounceMs: 300,
+})
+
+console.log(`Dashboard running at ${handle.url}`)
+
+// Trigger manual re-analysis
+handle.triggerAnalysis()
+
+// Shut down
+await handle.close()
+```
+
 ## Package Structure
 
 ```
 packages/
-  core/     @inngest-tools/core   — TypeScript AST analysis (ts-morph)
-  viz/      @inngest-tools/viz    — Graph building & rendering
-  lint/     @inngest-tools/lint   — Lint engine, rules & reporters
-  cli/      inngest-tools         — CLI entry point
+  core/        @inngest-tools/core        — TypeScript AST analysis (ts-morph)
+  viz/         @inngest-tools/viz         — Graph building & rendering
+  lint/        @inngest-tools/lint        — Lint engine, rules & reporters
+  dev-server/  @inngest-tools/dev-server  — Live dev dashboard server
+  cli/         inngest-tools              — CLI entry point
 ```
 
 ## Development

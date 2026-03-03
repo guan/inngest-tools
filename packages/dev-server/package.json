@@ -1,6 +1,6 @@
 {
   "name": "@inngest-tools/dev-server",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Live dev dashboard for monitoring Inngest function analysis",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
